@@ -1,0 +1,16 @@
+With transactions_by_day as(
+  select
+      cast(transaction_time as Date) As Date,
+      SUM(transaction_amount) as total_transaction_amount  
+  from transactions
+  group by cast(transaction_time as date) 
+  order by cast(transaction_time as date)
+)
+
+Select moving_average from 
+  (select *,
+    avg(total_transaction_amount) OVER(ORDER BY date
+       ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
+       as moving_average
+  from transactions_by_day ) rolling_avg
+where Date = '2021-01-31'
